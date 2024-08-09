@@ -24,7 +24,7 @@ def load_model(model_name, device, num_gpus):
     else:
         raise ValueError(f"Invalid device: {device}")
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="right", use_fast=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="right", use_fast=True, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(model_name, low_cpu_mem_usage=True, **kwargs)
 
     if device == "cuda" and num_gpus == 1:
@@ -104,9 +104,9 @@ def chat_stream(model, tokenizer, query, history, max_new_tokens=512,
 
 def generate_prompt(query, history, eos):
     if not history:
-        return f"""一位用户和智能医疗大模型HuatuoGPT之间的对话。对于用户的医疗问诊，HuatuoGPT给出准确的、详细的、温暖的指导建议。对于用户的指令问题，HuatuoGPT给出有益的、详细的、有礼貌的回答。<病人>：{query} <HuatuoGPT>："""
+        return f"""一位用户和智能医疗大模型哈力馨GPT之间的对话。对于用户的医疗问诊，哈力馨GPT给出准确的、详细的、温暖的指导建议。对于用户的指令问题，哈力馨GPT给出有益的、详细的、有礼貌的回答。<病人>：{query} <哈力馨GPT>："""
     else:
-        prompt = '一位用户和智能医疗大模型HuatuoGPT之间的对话。对于用户的医疗问诊，HuatuoGPT给出准确的、详细的、温暖的指导建议。对于用户的指令问题，HuatuoGPT给出有益的、详细的、有礼貌的回答。'
+        prompt = '一位用户和智能医疗大模型哈力馨GPT之间的对话。对于用户的医疗问诊，哈力馨GPT给出准确的、详细的、温暖的指导建议。对于用户的指令问题，哈力馨GPT给出有益的、详细的、有礼貌的回答。'
         for i, (old_query, response) in enumerate(history):
             prompt += "<病人>：{} <HuatuoGPT>：{}".format(old_query, response) + eos
         prompt += "<病人>：{} <HuatuoGPT>：".format(query)
@@ -121,7 +121,7 @@ def main(args):
     os_name = platform.system()
     clear_command = 'cls' if os_name == 'Windows' else 'clear'
     history = []
-    print("HuatuoGPT: 你好，我是一个解答医疗健康问题的大模型，目前处于测试阶段，请以医嘱为准。请问有什么可以帮到您？输入 clear 清空对话历史，stop 终止程序")
+    print("哈力馨GPT: 你好，我是一个解答医疗健康问题的大模型，目前处于测试阶段，请以医嘱为准。请问有什么可以帮到您？输入 clear 清空对话历史，stop 终止程序")
     while True:
         query = input("\n用户：")
         if query == "stop":
@@ -129,10 +129,10 @@ def main(args):
         if query == "clear":
             history = []
             os.system(clear_command)
-            print("HuatuoGPT: 你好，我是一个解答医疗健康问题的大模型，目前处于测试阶段，请以医嘱为准。请问有什么可以帮到您？输入 clear 清空对话历史，stop 终止程序")
+            print("哈力馨GPT: 你好，我是一个解答医疗健康问题的大模型，目前处于测试阶段，请以医嘱为准。请问有什么可以帮到您？输入 clear 清空对话历史，stop 终止程序")
             continue
         
-        print(f"HuatuoGPT: ", end="", flush=True)
+        print(f"哈力馨GPT: ", end="", flush=True)
         pre = 0
         for outputs in chat_stream(model, tokenizer, query, history, max_new_tokens=args.max_new_tokens,
                 temperature=args.temperature, repetition_penalty=1.2, context_len=1024):
